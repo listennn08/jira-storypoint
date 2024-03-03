@@ -1,76 +1,108 @@
-import { Box, Tabs, Tab } from '@mui/material';
-import { TreeView, TreeItem } from '@mui/x-tree-view';
 import { useState, useEffect } from 'react';
-import '@fontsource/roboto/300.css';
+import { Box, BottomNavigation, BottomNavigationAction, Paper, CircularProgress, Typography, } from '@mui/material';
+import FeedIcon from '@mui/icons-material/Feed';
+import PersonIcon from '@mui/icons-material/Person';
+
+import { orderKeyBySprint } from '../utils';
+import TicketTabs from './TicketTabs';
+import StoryPointTable from './StoryPointTable';
+
 import '@fontsource/roboto/400.css';
 import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
 
-import './Popup.css'
+const port = chrome.runtime.connect({ name: 'popup' });
 
 export const Popup = () => {
-  const [sprint, setSprint] = useState(0);
-  const [tickets, setTickets] = useState({});
+  const [loading, setLoading] = useState(true);
+  const [tickets, setTickets] = useState<Record<string, any>>({});
+  const [activeBlock, setActiveBlock] = useState(0);
+  const [groupByAssigneeObj, setGroupByAssigneeObj] = useState<Record<string, any>>({});
+  const [tableHeaders, setTableHeaders] = useState([] as any[]);
+  const [error, setError] = useState('');
 
-  function a11yProps(index: number) {
-    return {
-      id: `tab-${index}`,
-      'aria-controls': `tabpanel-${index}`,
-    };
+  function messageListener(data: any) {
+    if (!data) return;
+    if (data.loading) {
+      setLoading(true);
+      return;
+    } else {
+      setLoading(false);
+    }
+    if (data.error) {
+      setError(data.error);
+      return;
+    }
+
+    setTickets(orderKeyBySprint(data.sprintObj));
+    setGroupByAssigneeObj(data.groupByAssigneeObj);
+    setTableHeaders(Object.keys(data.sprintObj).sort((a, b) => {
+      const springItemOrder = ['CDB', 'DBP', 'FWP', 'DevOps']
+      if (a.includes('Backlog')) return 1;
+      if (b.includes('Backlog')) return -1;
+      const [aBoard, , aSprint] = a.split(' ');
+      const [bBoard, , bSprint] = b.split(' ');
+      if (aBoard !== bBoard) {
+        return springItemOrder.indexOf(aBoard) - springItemOrder.indexOf(bBoard);
+      }
+      const aSpringNumber = Number(aSprint.replace('R', ''))
+      const bSpringNumber = Number(bSprint.replace('R', ''))
+      return aSpringNumber - bSpringNumber;
+    }));
   }
 
-  function handleChange(event: React.SyntheticEvent, newValue: number) {
-    setSprint(newValue);
-  };
 
 
   useEffect(() => {
-    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-      let tabId = tabs[0].id;
+    port.postMessage({ event: 'popup-ready' });
+    chrome.runtime.onMessage.addListener(messageListener);
 
-      chrome.tabs.sendMessage(tabId, {event: 'popup-ready'}, (response) => {
-        setTickets(response.sprintObj);
-      });
-    });
+    return () => {
+      port.onMessage.removeListener(messageListener);
+      chrome.runtime.onMessage.removeListener(messageListener);
+    }
   }, []);
+
+  let content = undefined;
+
+  if (loading) {
+    content = (
+      <Box sx={{ p: 2, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (error) {
+    content = (
+      <Typography variant="h6" textAlign="center" component="div" width={'100%'} p={2} color="error">
+        {error}
+      </Typography>
+    );
+  }
 
   return (
     <main>
-      <Box>
-        <Tabs value={sprint} onChange={handleChange}>
-          {Object.keys(tickets).map((sprintName, index) => (
-            <Tab label={sprintName} key={index} {...a11yProps(index)} />
-          ))}
-        </Tabs>
+      <Box sx={{ mb: 6 }}>
+        {content || (
+          <>
+            {activeBlock === 0 && (<TicketTabs tickets={tickets} />)}
+            {activeBlock === 1 && (<StoryPointTable groupByAssigneeObj={groupByAssigneeObj} tableHeaders={tableHeaders} />)}
+          </>
+        )}
       </Box>
-      {Object.keys(tickets).map((sprintName, index) => {
-          return (
-            <div  
-              role="tabpanel"
-              hidden={sprint !== index}
-              id={`tabpanel-${index}`}
-              aria-labelledby={`tab-${index}`}
-            >
-              {sprint === index && <Box>
-                <h1>{sprintName}</h1>
-                <TreeView>
-                  {tickets[sprintName].map((ticket, index) => (
-                    <TreeItem label={`(${ticket.storypoint}) ${ticket.summary} ${ticket.assignee}`} key={index} nodeId={index}>
-                    {ticket.subtasks?.map((subtask, subIndex) => (
-                      <TreeItem label={subtask.summary} key={subIndex} nodeId={index + subIndex} />
-                    ))}
-                    </TreeItem>
-                  ))}
-                </TreeView>
-                {/* <ul>
-                  {tickets[sprintName].map((ticket, index) => (
-                    <li key={index}>{ticket.summary}</li>
-                  ))}
-                </ul> */}
-              </Box>}
-            </div>
-          )
-        })}
+      <Paper sx={{ position: 'fixed', bottom: 0, left: 0, right: 0 }}>
+        <BottomNavigation
+          showLabels
+          value={activeBlock}
+          onChange={(event, newValue) => {
+            setActiveBlock(newValue);
+          }}
+        >
+          <BottomNavigationAction label="Tickets" icon={<FeedIcon />} />
+          <BottomNavigationAction label="Story Point" icon={<PersonIcon />} />
+        </BottomNavigation>
+      </Paper>
     </main>
   )
 }
