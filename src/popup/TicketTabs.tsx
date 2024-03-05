@@ -22,7 +22,7 @@ const TicketTabs = (
 
   return (
     <>
-      <Box>
+      <Box minWidth={800}>
         <Tabs value={sprint} variant="scrollable" scrollButtons="auto" onChange={handleChange}>
           {Object.keys(tickets).map((sprintName, index) => (
             <Tab label={sprintName} key={sprintName} {...a11yProps(index)} />
