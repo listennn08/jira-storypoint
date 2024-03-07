@@ -76,6 +76,7 @@ export const Options = () => {
       email: confirm ?  form.email : undefined,
       apiKey: confirm ?  form.apiKey : undefined,
       baseURL: form.baseURL,
+      sprintStartWord: form.sprintStartWord,
       boards: form.boards,
     }
 
@@ -160,7 +161,6 @@ export const Options = () => {
 
   useEffect(() => {
     chrome.storage.sync.get(STORAGE_KEYS, (result) => {
-      result.boards = result.boards,
       setForm(Object.assign({}, initialNewForm(), result))
     })
   }, [])
