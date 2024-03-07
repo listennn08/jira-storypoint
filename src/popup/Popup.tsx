@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Box, BottomNavigation, BottomNavigationAction, Paper, CircularProgress, Typography, } from '@mui/material';
 import FeedIcon from '@mui/icons-material/Feed';
 import PersonIcon from '@mui/icons-material/Person';
@@ -44,8 +44,8 @@ export const Popup = () => {
       <Box sx={{ mb: 6 }}>
         {content || (
           <>
-            {activeBlock === 0 && (<TicketTabs tickets={tickets} />)}
-            {activeBlock === 1 && (<StoryPointTable groupByAssigneeObj={groupByAssigneeObj} tableHeaders={tableHeaders} />)}
+            {activeBlock === 0 && (<StoryPointTable groupByAssigneeObj={groupByAssigneeObj} tableHeaders={tableHeaders} />)}
+            {activeBlock === 1 && (<TicketTabs tickets={tickets} />)}
           </>
         )}
       </Box>
@@ -57,8 +57,8 @@ export const Popup = () => {
             setActiveBlock(newValue);
           }}
         >
-          <BottomNavigationAction label="Tickets" icon={<FeedIcon />} />
           <BottomNavigationAction label="Story Point" icon={<PersonIcon />} />
+          <BottomNavigationAction label="Tickets" icon={<FeedIcon />} />
         </BottomNavigation>
       </Paper>
     </main>

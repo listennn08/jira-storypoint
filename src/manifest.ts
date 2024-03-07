@@ -44,4 +44,13 @@ export default defineManifest({
   chrome_url_overrides: {
     newtab: 'newtab.html',
   },
+  commands: {
+    _execute_action: {
+      suggested_key: {
+        default: 'Alt+J',
+        mac: 'Alt+J',
+      },
+      description: 'Open Jira Sprint tab',
+    },
+  },
 })

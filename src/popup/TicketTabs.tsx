@@ -1,20 +1,21 @@
-import { Box, Tab, Tabs } from '@mui/material';
-import { TreeView, TreeItem } from '@mui/x-tree-view';
-import { memo, useState } from 'react';
-import TreeLabel from './TreeLabel';
+import { memo, useState } from "react";
+import { Box, Tab, Tabs } from "@mui/material";
+import { TreeView, TreeItem } from "@mui/x-tree-view";
+import TreeLabel from "./TreeLabel";
 
-const TicketTabs = (
-  props: { tickets: Record<string, any[]> }
-) => {
+interface TicketTabsProps {
+  tickets: Record<string, any[]>;
+}
+const TicketTabs = (props: TicketTabsProps) => {
   const { tickets } = props;
   const [sprint, setSprint] = useState(0);
 
   function a11yProps(index: number) {
     return {
       id: `tab-${index}`,
-      'aria-controls': `tabpanel-${index}`,
+      "aria-controls": `tabpanel-${index}`,
     };
-  }
+  };
 
   function handleChange(event: React.SyntheticEvent, newValue: number) {
     setSprint(newValue);
@@ -63,7 +64,7 @@ const TicketTabs = (
         </div>
       ))}
     </>
-  )
-}
+  );
+};
 
 export default memo(TicketTabs);
