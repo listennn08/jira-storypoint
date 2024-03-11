@@ -21,3 +21,6 @@
 
 # secrets
 secrets.*.js
+
+# chrome packaged app
+*.pem
