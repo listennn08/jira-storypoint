@@ -16,7 +16,7 @@ export default defineManifest({
     128: 'icons/jira-safari-pintab-icon.png',
   },
   action: {
-    default_popup: 'popup.html',
+    // default_popup: 'popup.html',
     default_icon: 'icons/jira-safari-pintab-icon.png',
   },
   options_page: 'options.html',
@@ -24,6 +24,7 @@ export default defineManifest({
   background: {
     service_worker: 'src/background/index.ts',
     type: 'module',
+    persistent: false,
   },
   content_scripts: [
     {
@@ -45,12 +46,17 @@ export default defineManifest({
     newtab: 'newtab.html',
   },
   commands: {
-    _execute_action: {
+    open_jira_sprint_tab: {
       suggested_key: {
-        default: 'Alt+J',
-        mac: 'Alt+J',
+        default: 'Ctrl+Shift+E',
       },
       description: 'Open Jira Sprint tab',
+    },
+    open_options_page: {
+      suggested_key: {
+        default: 'Ctrl+Shift+O',
+      },
+      description: 'Open Options page',
     },
   },
 })
