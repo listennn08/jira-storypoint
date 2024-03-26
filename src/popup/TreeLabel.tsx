@@ -27,9 +27,16 @@ const TreeLabel = forwardRef((
         <Avatar src={ticket.iconUrl} variant="square" sx={{ width: 20, height: 20 }} />
         <Box sx={{ display: "flex", alignItems: "start", gap: 1 }}>
           <Typography variant="body2" color={"GrayText"} sx={{ fontWeight: 700, whiteSpace: "nowrap" }}>
-            <Link href={`${baseURL}/browse/${ticket.key}`} target="_blank" rel="noreferrer">
-              {ticket.key}
-            </Link>
+              <Link
+                href={`${baseURL}/browse/${ticket.key}`}
+                target="_blank"
+                rel="noreferrer"
+                onClick={(e) => {
+                  e.stopPropagation();
+                }}
+              >
+                {ticket.key}
+              </Link>
           </Typography>
           <Typography variant="body2" sx={{ fontWeight: 500 }}>{ticket.summary}</Typography>
         </Box>

@@ -95,6 +95,22 @@ export default function useFetchData() {
           sprintObj[sprint.name] = (sprintObj[sprint.name] || []).concat(tickets
             .filter((ticket: any) => ticket.fields.issuetype.name !== "Sub-task")
             .map((ticket: any) => {
+              const subtasks = ticket.fields.subtasks.map((subtask: any) => {
+                const taskInfo = subTasks.find((task: any) => subtask.key === task.key);
+                return {
+                  key: subtask.key,
+                  iconUrl: subtask.fields.issuetype.iconUrl,
+                  type: subtask.fields.issuetype.name,
+                  summary: subtask.fields.summary,
+                  status: subtask.fields.status.name,
+                  assignee: taskInfo.fields.assignee?.displayName,
+                  created: taskInfo.fields.created,
+                  updated: taskInfo.fields.updated,
+                  sprint: sprint.name,
+                  story_point: taskInfo.fields.customfield_10076,
+                }
+              })
+
               return {
                 key: ticket.key,
                 iconUrl: ticket.fields.issuetype.iconUrl,
@@ -105,22 +121,8 @@ export default function useFetchData() {
                 created: ticket.fields.created,
                 updated: ticket.fields.updated,
                 sprint: sprint.name,
-                story_point: ticket.fields.customfield_10076,
-                subtasks: ticket.fields.subtasks.map((subtask: any) => {
-                  const taskInfo = subTasks.find((subtask: any) => subtask.key === subtask.key);
-                  return {
-                    key: subtask.key,
-                    iconUrl: subtask.fields.issuetype.iconUrl,
-                    type: subtask.fields.issuetype.name,
-                    summary: subtask.fields.summary,
-                    status: subtask.fields.status.name,
-                    assignee: taskInfo.fields.assignee?.displayName,
-                    created: taskInfo.fields.created,
-                    updated: taskInfo.fields.updated,
-                    sprint: sprint.name,
-                    story_point: taskInfo.fields.customfield_10076,
-                  }
-                }).sort(sortTickets)
+                story_point: subtasks.reduce((acc: number, subtask: any) => acc + (subtask.story_point || 0), 0),
+                subtasks: subtasks.sort(sortTickets)
               }
             })
             .sort(sortTickets)
