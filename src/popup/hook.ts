@@ -96,7 +96,8 @@ export default function useFetchData() {
             .filter((ticket: any) => ticket.fields.issuetype.name !== "Sub-task")
             .map((ticket: any) => {
               const subtasks = ticket.fields.subtasks.map((subtask: any) => {
-                const taskInfo = subTasks.find((task: any) => subtask.key === task.key);
+                const taskInfo = subTasks.find((task: any) => subtask.key === task.key) || {};
+                console.log(ticket.key, subtask.key, JSON.parse(JSON.stringify(taskInfo)))
                 return {
                   key: subtask.key,
                   iconUrl: subtask.fields.issuetype.iconUrl,
@@ -147,6 +148,7 @@ export default function useFetchData() {
       }));
     } catch (e: any) {
       setError(e.message)
+      console.error(e)
     } finally {
       setLoading(false);
     }

@@ -27,7 +27,7 @@ const StoryPointTable: React.FC<StoryPointTableProps> = ({ groupByAssigneeObj, t
   }, [])
 
   return (
-    <Box width="800px" height="600px">
+    <Box minWidth="800px">
       <DataGrid 
         columns={[
           { field: 'assignee', headerName: 'Assignee', width: 100 },
