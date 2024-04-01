@@ -4,7 +4,9 @@ import { TreeView, TreeItem } from "@mui/x-tree-view";
 import TreeLabel from "./TreeLabel";
 
 interface TicketTabsProps {
-  tickets: Record<string, any[]>;
+  tickets: Record<string, {
+    issues: any[];
+  }>;
 }
 const TicketTabs = (props: TicketTabsProps) => {
   const { tickets } = props;
@@ -42,7 +44,7 @@ const TicketTabs = (props: TicketTabsProps) => {
             <Box sx={{ py: 1 }}>
               <TreeView
                 defaultExpanded={
-                  tickets[sprintName]
+                  tickets[sprintName].issues
                     .map((ticket: any, index: number) => {
                       if (ticket.subtasks) {
                         return index.toString();
@@ -51,7 +53,7 @@ const TicketTabs = (props: TicketTabsProps) => {
                     .filter((el: any) => el !== undefined) as string[]
                 }
               >
-                {tickets[sprintName].map((ticket: any, index: number) => (
+                {tickets[sprintName].issues.map((ticket: any, index: number) => (
                   <TreeItem label={<TreeLabel ticket={ticket} key={`label-${index}`} />} key={index} nodeId={`${index}`}>
                     {ticket.subtasks?.map((subtask: any, subIndex: number) => (
                       <TreeItem label={<TreeLabel ticket={subtask} key={`label-${index}${subIndex}`} />} key={`${index}${subIndex}`} nodeId={`${index}${subIndex}`} />

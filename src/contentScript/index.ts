@@ -26,7 +26,7 @@ import _ from 'lodash';
         fields: ['summary', 'parent', 'customfield_10076',],
         fieldsByKeys: false,
         jql: `key in (${keys.join(", ")})`,
-        maxResults: 500,
+        maxResults: 1000,
         startAt: 0,
       }),
     });

@@ -16,7 +16,7 @@ export default defineManifest({
     128: 'icons/jira-safari-pintab-icon.png',
   },
   action: {
-    // default_popup: 'popup.html',
+    default_popup: 'popup.html',
     default_icon: 'icons/jira-safari-pintab-icon.png',
   },
   options_page: 'options.html',

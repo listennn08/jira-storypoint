@@ -34,3 +34,26 @@ export function reorder<T>(
 
   return result;
 };
+
+export function groupByAssignee(sprintObj: Record<string, any>) {
+  const assigneeStoryPointsBySprint: Record<string, any> = {};
+  const ignoreStatus = ["Done", "Blocked", "Closed", "Abandoned"];
+  for (const sprint in sprintObj) {
+    const tickets = sprintObj[sprint].issues;
+
+    for (const ticket of tickets) {
+      if (!ticket.assignee || ignoreStatus.includes(ticket.status)) {
+        continue;
+      }
+      if (!assigneeStoryPointsBySprint[ticket.assignee]) {
+        assigneeStoryPointsBySprint[ticket.assignee] = {};
+      }
+      if (!assigneeStoryPointsBySprint[ticket.assignee][sprint]) {
+        assigneeStoryPointsBySprint[ticket.assignee][sprint] = 0;
+      }
+      assigneeStoryPointsBySprint[ticket.assignee][sprint] += ticket.story_point || 0;
+    }
+  }
+
+  return assigneeStoryPointsBySprint;
+};

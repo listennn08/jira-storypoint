@@ -1,10 +1,12 @@
 import { memo, useEffect, useState } from "react";
-import { Box, Typography } from "@mui/material";
-import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import { Box } from "@mui/material";
+import { DataGrid } from "@mui/x-data-grid";
+import { groupByAssignee } from "../utils";
 
 interface StoryPointTableProps {
-  groupByAssigneeObj: Record<string, Record<string, number>>;
-  tableHeaders: string[];
+  tickets: Record<string, {
+    issues: any[];
+  }>;
 }
 
 interface StoryPointTableData {
@@ -12,10 +14,14 @@ interface StoryPointTableData {
   assignee: string;
 }
 
-const StoryPointTable: React.FC<StoryPointTableProps> = ({ groupByAssigneeObj, tableHeaders }) => {
+const StoryPointTable: React.FC<StoryPointTableProps> = ({ tickets }) => {
   const [tableData, setTableData] = useState<StoryPointTableData[]>([]);
+  const [tableHeaders, setTableHeaders] = useState<string[]>([]);
 
   useEffect(() => {
+    const groupByAssigneeObj = groupByAssignee(tickets)
+    const tableHeaders = Object.keys(tickets);
+    setTableHeaders(tableHeaders);
     const data = Object.keys(groupByAssigneeObj).map((user: string) => {
       const row: StoryPointTableData = { assignee: user, id: user };
       tableHeaders.forEach((sprintName) => {
@@ -24,10 +30,10 @@ const StoryPointTable: React.FC<StoryPointTableProps> = ({ groupByAssigneeObj, t
       return row;
     });
     setTableData(data);
-  }, [])
+  }, [tickets])
 
   return (
-    <Box width="800px" height="600px">
+    <Box minWidth="800px">
       <DataGrid 
         columns={[
           { field: 'assignee', headerName: 'Assignee', width: 100 },
